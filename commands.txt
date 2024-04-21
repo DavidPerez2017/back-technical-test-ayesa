@@ -1,0 +1,25 @@
+Nest CLI__________________________________________________________
+
+nest new <project-name>
+nest start --watch
+
+nest generate <schema> <name>
+  nest g module auth
+  nest g controller auth (nest g co controllers/tasks --flat)
+  nest g service auth (nest g s services/tasks --flat)
+
+NPM Depedecies ___________________________________________________
+
+npm i -g @nestjs/cli
+npm i @nestjs/config
+npm i joi @types/joi
+npm i @nestjs/typeorm typeorm pg
+npm i pg
+npm i --save @nestjs/swagger swagger-ui-express
+npm i --save @nestjs/axios
+npm i --save class-validator class-transformer
+
+npm i --save @nestjs/passport passport @nestjs/jwt passport-jwt bcrypt
+npm i --save-dev @types/passport-jwt @types/bcrypt
+npm install passport-local
+
