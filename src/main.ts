@@ -8,18 +8,17 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
-    .setTitle('Service data API')
-    .setDescription('Backend side for service data')
+    .setTitle('API Service ayesa')
+    .setDescription('Backend side for test technical ayesa')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
-      tagsSorter: 'alpha'
+      tagsSorter: 'alpha',
     },
-    customSiteTitle: 'Service data Apí'
-
+    customSiteTitle: 'Service data Apí',
   });
   await app.listen(process.env.PORT || 3000);
 }

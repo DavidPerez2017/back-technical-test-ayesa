@@ -2,10 +2,10 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class DResponse {
   @ApiProperty()
-  message: string;
+  response: boolean;
   
   @ApiProperty()
-  result: JSON;
+  result: any[];
   
   @ApiProperty()
   notice: string;  
@@ -13,8 +13,8 @@ export class DResponse {
   @ApiProperty()
   error: string;
 
-  constructor(message, result, notice, error) {
-    this.message = message;
+  constructor(response, result, notice, error) {
+    this.response = response;
     this.result = result;
     this.notice = notice;
     this.error = error;

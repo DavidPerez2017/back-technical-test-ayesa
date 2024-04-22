@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
 
-export class DOperation {
+export class UpdateDto {
   @ApiProperty()
   @IsNotEmpty()
   apiKey: string;
@@ -34,4 +34,4 @@ export class DOperation {
   }
 }
 
-export default DOperation;
+export default UpdateDto;
