@@ -1,35 +1,23 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 
 export class UpdateDto {
   @ApiProperty()
-  @IsNotEmpty()
-  apiKey: string;
-  
-  @ApiProperty()
   fields: string;
-  
-  @ApiProperty()
-  table: string;  
-  
-  @ApiProperty()
-  condition: string; 
 
   @ApiProperty()
-  modifier: string; 
+  table: string;
 
   @ApiProperty()
-  values: string; 
+  condition: string;
 
   @ApiProperty()
-  returning: string; 
+  returning: string;
 
-  constructor(apiKey, fields, table, condition, modifier, values, returning) {
-    this.apiKey = apiKey;
+  constructor(fields, table, condition, returning) {
     this.fields = fields;
     this.table = table;
     this.condition = condition;
-    this.values = values;
     this.returning = returning;
   }
 }

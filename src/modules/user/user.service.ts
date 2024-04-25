@@ -3,11 +3,20 @@ import { DataReturn } from 'src/utilities/interfaces/data-return-interface';
 import { QueryService } from '../query/query-service';
 import SelectDto from '../query/dto/select.dto';
 import DeleteDto from '../query/dto/delete.dto';
+import { UserDto } from './dto/user-login.dto';
+import UpdateDto from '../query/dto/update.dto';
 
 @Injectable()
 export class UserService {
   constructor(private queryService: QueryService) {}
 
+  /**
+   * @description Method that consults all users.
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 21/04/2024
+   * @returns {type}
+   */
   async getAllUsers() {
     const dataReturn: DataReturn = {
       response: true,
@@ -23,7 +32,45 @@ export class UserService {
         modifier: '',
       };
       const responseBd = await this.queryService.select(operation);
-      if (responseBd && responseBd.response && responseBd.result.length) {
+      if (responseBd && responseBd.response) {
+        dataReturn.data = responseBd.result;
+      } else {
+        dataReturn['error'] =
+          'Lo sentimos, ocurrió un error, comunícate con tu proveedor';
+        dataReturn['response'] = false;
+      }
+      return dataReturn;
+    } catch (e) {
+      console.log(e);
+      dataReturn['response'] = false;
+      dataReturn['error'] = e;
+      return dataReturn;
+    }
+  }
+
+  /**
+   * @description Method that edit the name of the user
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 21/04/2024
+   * @returns {type}
+   */
+  async editUser(id: string, dto: UserDto) {
+    const dataReturn: DataReturn = {
+      response: true,
+      data: null,
+      error: '',
+    };
+
+    try {
+      const operation: UpdateDto = {
+        table: 'str_admin.tbl_user',
+        fields: `name = '${dto.name}'`,
+        condition: `email = '${id}'`,
+        returning: '',
+      };
+      const responseBd = await this.queryService.update(operation);
+      if (responseBd && responseBd.response) {
         dataReturn.data = responseBd.result;
         return dataReturn;
       } else {
@@ -31,19 +78,24 @@ export class UserService {
           dataReturn['error'] =
             'Lo sentimos, ocurrió un error, comunícate con tu proveedor';
           dataReturn['response'] = false;
-        } else {
-          dataReturn['response'] = false;
-          dataReturn['error'] = 'Usuario y/o Contraseña incorrecta.';
         }
         return dataReturn;
       }
     } catch (e) {
+      console.log(e);
       dataReturn['response'] = false;
       dataReturn['error'] = e;
       return dataReturn;
     }
   }
 
+  /**
+   * @description Method that delete a user by the id(email)
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 21/04/2024
+   * @returns {type}
+   */
   async deleteUser(id: string) {
     const dataReturn: DataReturn = {
       response: true,
@@ -70,6 +122,7 @@ export class UserService {
         return dataReturn;
       }
     } catch (e) {
+      console.log(e);
       dataReturn['response'] = false;
       dataReturn['error'] = e;
       return dataReturn;

@@ -1,17 +1,11 @@
 import {
   Body,
   Controller,
-  Get,
-  Param,
-  Patch,
   Post,
-  Put,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserLogin } from './dto/user-login.dto';
 import { LoginService } from './login.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Public } from 'decorators';
 import { UserRegister } from './dto/user-register.dto';
 

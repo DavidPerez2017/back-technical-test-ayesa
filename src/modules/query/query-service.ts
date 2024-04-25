@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import DOperation, { InsertDto } from './dto/insert.dto';
 import { Pool } from 'pg';
 import DResponse from './dto/response.dto';
@@ -21,9 +20,11 @@ export class QueryService {
   }
 
   /**
-   *
-   * @param operation
-   * @returns
+   * @description Method that performs the execution of an select transaction in db
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 21/04/2024
+   * @returns {type}
    */
   async select(dto: SelectDto) {
     try {
@@ -51,6 +52,114 @@ export class QueryService {
     }
   }
 
+  /**
+   * @description Method that performs the execution of an insert transaction in db
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 21/04/2024
+   * @returns {type}
+   */
+  async insert(operation: InsertDto) {
+    if (!operation.table) {
+      return new DResponse('', [], 'table required', '');
+    }
+    try {
+      let returning = '';
+      let query = this.buildInsert(operation);
+
+      const queryTransaction = await this.dbProvider.pool.query(query);
+      if (operation.returning && queryTransaction.rows?.[0]) {
+        returning = queryTransaction.rows[0][operation.returning];
+      }
+
+      return new DResponse(true, [], returning, '');
+    } catch (error) {
+      return new DResponse(false, [], '', error.message);
+    }
+  }
+
+  /**
+   * @description Method that performs the execution of an update transaction in db
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 21/04/2024
+   * @returns {type}
+   */
+  async update(operation: UpdateDto) {
+    if (!operation.condition || !operation.table || !operation.fields) {
+      return new DResponse('', [], 'condition, table or fields required', '');
+    }
+
+    try {
+      let query =
+        'update ' +
+        operation.table +
+        ' set ' +
+        operation.fields +
+        ' where ' +
+        operation.condition;
+
+      if (operation.returning) {
+        query += ' returning ' + operation.returning;
+      }
+
+      console.log(query);
+      const dbQuery = await this.dbProvider.pool.query(query);
+
+      let valueReturn = '';
+      if (operation.returning && dbQuery.rows?.[0]) {
+        valueReturn = dbQuery.rows[0][operation.returning];
+      }
+      return new DResponse('Edición con exito', [], valueReturn, '');
+    } catch (error) {
+      return new DResponse('Error en la edición', [], '', 'apiKey not found');
+    }
+  }
+
+  /**
+   * @description Method that performs the execution of an delete transaction in db
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 21/04/2024
+   * @returns {type}
+   */
+  async delete(operation: DeleteDto) {
+    if (!operation.condition) {
+      return new DResponse('', [], 'condition required', '');
+    }
+    if (!operation.table) {
+      return new DResponse('', [], 'table required', '');
+    }
+
+    try {
+      let returning = '';
+      let query =
+        'delete from  ' + operation.table + '  where ' + operation.condition;
+      const queryTransaction = await this.dbProvider.pool.query(query);
+
+      if (operation.returning && queryTransaction.rows?.[0]) {
+        returning = queryTransaction.rows[0][operation.returning];
+      } else {
+        return new DResponse(
+          'Error al eliminar',
+          [],
+          returning,
+          queryTransaction.error,
+        );
+      }
+      return new DResponse('Eliminado con exito', [], returning, '');
+    } catch (error) {
+      return new DResponse('Error en la eliminación', [], '', error.message);
+    }
+  }
+
+  /**
+   * @description Method that verify rows type date
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 21/04/2024
+   * @returns {type}
+   */
   iteratorRows(rows, connection, operation) {
     for (let row of rows) {
       for (let field in row) {
@@ -78,33 +187,11 @@ export class QueryService {
   }
 
   /**
-   *
-   * @param operation
-   * @returns
-   */
-  async insert(operation: InsertDto) {
-    if (!operation.table) {
-      return new DResponse('', [], 'table required', '');
-    }
-    try {
-      let returning = '';
-      let query = this.buildInsert(operation);
-
-      const queryTransaction = await this.dbProvider.pool.query(query);
-      if (operation.returning && queryTransaction.rows?.[0]) {
-        returning = queryTransaction.rows[0][operation.returning];
-      }
-
-      return new DResponse(true, [], returning, '');
-    } catch (error) {
-      return new DResponse(false, [], '', error.message);
-    }
-  }
-
-  /**
-   *
-   * @param operation
-   * @returns
+   * @description Method that constructs the insert statement
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 21/04/2024
+   * @returns {type}
    */
   buildInsert(operation: DOperation) {
     let query = '';
@@ -148,81 +235,11 @@ export class QueryService {
   }
 
   /**
-   *
-   * @param operation
-   * @returns
-   */
-  async update(operation: UpdateDto) {
-    let connection = JSON.parse(this.dbConnection);
-    this.buildConnection(connection['production']);
-    if (!operation.condition || !operation.table || !operation.fields) {
-      return new DResponse('', [], 'condition, table or fields required', '');
-    }
-
-    try {
-      let query =
-        'update ' +
-        operation.table +
-        ' set ' +
-        operation.fields +
-        ' where ' +
-        operation.condition;
-
-      if (operation.returning) {
-        query += ' returning ' + operation.returning;
-      }
-
-      console.log(query);
-      const dbQuery = await this.dbProvider.pool.query(query);
-
-      let valueReturn = '';
-      if (operation.returning && dbQuery.rows?.[0]) {
-        valueReturn = dbQuery.rows[0][operation.returning];
-      }
-      return new DResponse('Edición con exito', [], valueReturn, '');
-    } catch (error) {
-      return new DResponse('Error en la edición', [], '', 'apiKey not found');
-    }
-  }
-
-  /**
-   *
-   * @param operation
-   * @returns
-   */
-  async delete(operation: DeleteDto) {
-    if (!operation.condition) {
-      return new DResponse('', [], 'condition required', '');
-    }
-    if (!operation.table) {
-      return new DResponse('', [], 'table required', '');
-    }
-
-    try {
-      let returning = '';
-      let query =
-        'delete from  ' + operation.table + '  where ' + operation.condition;
-      const queryTransaction = await this.dbProvider.pool.query(query);
-
-      if (operation.returning && queryTransaction.rows?.[0]) {
-        returning = queryTransaction.rows[0][operation.returning];
-      } else {
-        return new DResponse(
-          'Error al eliminar',
-          [],
-          returning,
-          queryTransaction.error,
-        );
-      }
-      return new DResponse('Eliminado con exito', [], returning, '');
-    } catch (error) {
-      return new DResponse('Error en la eliminación', [], '', error.message);
-    }
-  }
-
-  /**
-   *
-   * @param connection
+   * @description Method that create connection con db postgresql
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 21/04/2024
+   * @returns {type}
    */
   buildConnection(connection) {
     this.dbProvider = {

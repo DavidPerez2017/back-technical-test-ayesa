@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { DataReturn } from 'src/utilities/interfaces/data-return-interface';
-import { RegisterDto } from '../register/dto/register.dto';
 import { UserLogin } from './dto/user-login.dto';
 import { QueryService } from '../query/query-service';
 import SelectDto from '../query/dto/select.dto';
@@ -15,6 +14,13 @@ export class LoginService {
     private queryService: QueryService,
   ) {}
 
+  /**
+   * @description method to log in a user
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 22/04/2024
+   * @returns {type}
+   */
   async login(dto: UserLogin) {
     const dataReturn: DataReturn = { response: true, data: '', error: '' };
     try {
@@ -33,6 +39,13 @@ export class LoginService {
     }
   }
 
+  /**
+   * @description Method that validate credentials in db
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 21/04/2024
+   * @returns {type}
+   */
   async validateUserCredentials(dto: UserLogin) {
     const dataReturn: DataReturn = {
       response: true,
@@ -72,14 +85,27 @@ export class LoginService {
     }
   }
 
+  /**
+   * @description Method that get token of the a user
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 22/04/2024
+   * @returns {type}
+   */
   async getToken(payload: any) {
     const jwtOptions = {
       secret: process.env.JWT_SECRET,
     };
-
     return this.jwtService.signAsync(payload, jwtOptions);
   }
 
+  /**
+   * @description Method that validate info user and register the new user
+   * @param {type} parameter
+   * @author David Pérez
+   * @date 21/04/2024
+   * @returns {type}
+   */
   async signUp(dto: UserRegister) {
     const dataReturn: DataReturn = { response: true, data: '', error: '' };
     try {

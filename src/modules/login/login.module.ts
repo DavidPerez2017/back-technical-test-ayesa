@@ -1,5 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { LoginController } from './login.controller';
 import { LoginService } from './login.service';
@@ -11,8 +11,7 @@ import { QueryModule } from '../query/query.module';
     ConfigModule.forRoot(),
     HttpModule,
     JwtModule,
-    QueryModule,
-    // forwardRef(() => LoginModule),
+    QueryModule
   ],
   controllers: [LoginController],
   providers: [LoginService],
